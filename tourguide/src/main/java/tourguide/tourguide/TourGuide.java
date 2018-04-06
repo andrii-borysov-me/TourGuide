@@ -295,7 +295,7 @@ public class TourGuide {
 
             Point resultPoint = new Point(); // this holds the final position of tooltip
             float density = mActivity.getResources().getDisplayMetrics().density;
-            final float adjustment = 10 * density; //adjustment is that little overlapping area of tooltip and targeted button
+            final float adjustment = 20 * density; //adjustment is that little overlapping area of tooltip and targeted button
 
             // calculate x position, based on gravity, tooltipMeasuredWidth, parent max width, x position of target view, adjustment
             if (toolTipMeasuredWidth > parent.getWidth()){
@@ -317,13 +317,12 @@ public class TourGuide {
             }
             // 2. x left boundary check
             if (resultPoint.x < 0){
-                mToolTipViewGroup.getLayoutParams().width = toolTipMeasuredWidth + resultPoint.x; //since point.x is negative, use plus
                 resultPoint.x = 0;
             }
             // 3. x right boundary check
             int tempRightX = resultPoint.x + toolTipMeasuredWidth;
             if ( tempRightX > parent.getWidth()){
-                mToolTipViewGroup.getLayoutParams().width = parent.getWidth() - resultPoint.x; //since point.x is negative, use plus
+                resultPoint.x = parent.getWidth() - toolTipMeasuredWidth;
             }
 
             // pass toolTip onClickListener into toolTipViewGroup
@@ -374,18 +373,11 @@ public class TourGuide {
     private int getYForTooTip(int gravity, int toolTipMeasuredHeight, int targetViewY, float adjustment){
         int y;
         if ((gravity & Gravity.TOP) == Gravity.TOP) {
-
-            if (((gravity & Gravity.LEFT) == Gravity.LEFT) || ((gravity & Gravity.RIGHT) == Gravity.RIGHT)) {
-                y =  targetViewY - toolTipMeasuredHeight + (int)adjustment;
-            } else {
-                y =  targetViewY - toolTipMeasuredHeight - (int)adjustment;
-            }
-        } else { // this is center
-            if (((gravity & Gravity.LEFT) == Gravity.LEFT) || ((gravity & Gravity.RIGHT) == Gravity.RIGHT)) {
-                y =  targetViewY + mHighlightedView.getHeight() - (int) adjustment;
-            } else {
-                y =  targetViewY + mHighlightedView.getHeight() + (int) adjustment;
-            }
+            y =  targetViewY - toolTipMeasuredHeight - (int)adjustment;
+        } else if ((gravity & Gravity.BOTTOM) == Gravity.BOTTOM) {
+            y =  targetViewY + mHighlightedView.getHeight() + (int) adjustment;
+        } else {
+            y =  targetViewY + mHighlightedView.getHeight() / 2 - toolTipMeasuredHeight / 2;
         }
         return y;
     }
